@@ -1,86 +1,59 @@
-/** this version would print Hello World before the todo */
-function main() {
-  fetch('https://jsonplaceholder.typicode.com/todos/1')
-    .then((response) => console.log(response.json()))
-    .catch((error) => console.error(error))
-
-  console.log("Hello world");
-}
-
-/** this version would print Hello World after the todo */
-async function main1() {
-  // Await tells the program to pause within this function, until the promise
-  // resolves before continuing on within this function. Outside of this function,
-  // code can still run.
-  
-  try {
-    const response = await fetch('https://jsonplaceholder.typicode.com/todos/2')
-    // This line of code will only execute if the promise is resolved.
-    console.log(response.json())
-  } catch (err) {
-    // This block will execute only if the promise is rejected.
-    console.log(err)
-  }
-
-  console.log("main 1");
-}
-/** this version would print Hello World after the todo */
-async function main2() {
-  const response = await fetch('https://jsonplaceholder.typicode.com/todos/3')
-  console.log(response.json())
-
-  console.log("main 2");
-}
-/** this version would print Hello World after the todo */
-async function main3() {
-  const response = await fetch('https://jsonplaceholder.typicode.com/todos/4')
-  console.log(response.json())
-
-  console.log("main 3");
-}
-
-
-// main();
-// main1();
-// main2();
-// main3();
+// To do:
+// Find an international weather app - DONE
+// Read documentation and create API call - DONE
+// Add basic forecast to index.html - DONE
+// Figure out how to select a forecast by location (read https://openweathermap.org/api/geocoding-api)
+// Create a form for user to select their chosen location's forecast
+// Use flexbox and CSS to improve page layout
+// Add dynamic page background, selected by keywords in shortForecast
 
 
 function getForecast() {
-  fetch('https://api.weather.gov/gridpoints/TOP/31,80/forecast')
+  fetch('https://api.openweathermap.org/data/2.5/weather?q=London,uk&units=metric&APPID=886b4d9fa52f373586e1ac5a100c5cf1')
     .then(response => response.json())
     .then(json => {
-      // just for exploring
-      console.log("response", json);
-      console.log("body", json.body); // not on json object, only on response object
-      console.log("status", json.status) // not on json object, only on response object
+
       // import part
       const forecast = json;
 
-      console.log("forcast", forecast)
+      console.log("forecast object: ", forecast)
+      console.log("Short forecast: ", forecast.weather[0].description)
+      console.log("Current temperature: ", forecast.main.temp,"°c")
+      console.log("Feels like: ", forecast.main.feels_like,"°c")
+      console.log("Current wind speed: ", forecast.wind.speed,"km/h")
 
-      const todaysForecast = forecast.properties.periods[0]
-      console.log("today", todaysForecast)
-
-      const shortForecast = todaysForecast.shortForecast
-      console.log("description: ", shortForecast)
-      console.log("long forecast", todaysForecast.detailedForecast)
+      const shortForecast = forecast.weather[0].description
+      const currentTemp = Math.round(forecast.main.temp)
+      const feelsLike = Math.round(forecast.main.feels_like)
+      const currentWindSpeed = Math.round(forecast.wind.speed)
 
       const myDiv = document.querySelector('#api-spot')
-     
-      const newImage = document.createElement("img")
-      newImage.src = todaysForecast.icon
-      newImage.alt = "todays weather"
+
+      const header = document.createElement("h1")
+      header.innerText = `Current weather in [location TBA]:`
 
       const newForecast = document.createElement("p")
-      newForecast.innerText = shortForecast
+      newForecast.innerText = `Quick description: ${shortForecast}`
 
+      const newTemp = document.createElement("p")
+      newTemp.innerText = `Current temperature: ${currentTemp} °c`
 
-      myDiv.appendChild(newImage)
+      const newFeelsLike = document.createElement("p")
+      newFeelsLike.innerText = `Feels like: ${feelsLike} °c`
+
+      const newWindSpeed = document.createElement("p")
+      newWindSpeed.innerText = `Current windspeed: ${currentWindSpeed} km/h`
+
+      myDiv.appendChild(header)
       myDiv.appendChild(newForecast)
+      myDiv.appendChild(newTemp)
+      myDiv.appendChild(newFeelsLike)
+      myDiv.appendChild(newWindSpeed)
 
     })
     .catch((error) => console.error(error))
 }
 
 getForecast();
+
+
