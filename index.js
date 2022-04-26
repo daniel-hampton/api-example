@@ -1,26 +1,48 @@
 // To do:
-// Find an international weather app - DONE
+// Find an international weather API - DONE
 // Read documentation and create API call - DONE
 // Add basic forecast to index.html - DONE
-// Figure out how to select a forecast by location (read https://openweathermap.org/api/geocoding-api)
+// Figure out how to select a forecast by location (read https://openweathermap.org/api/geocoding-api) - DONE
 // Create a form for user to select their chosen location's forecast
+// Figure out how to let user see and choose options for their city (e.g. which 'London' do they mean)?
 // Use flexbox and CSS to improve page layout
 // Add dynamic page background, selected by keywords in shortForecast
 
+function getLocation() {
+  // TO DO: move city name to a parameter of this function
+  return (
+    fetch('http://api.openweathermap.org/geo/1.0/direct?q=London&limit=5&appid=886b4d9fa52f373586e1ac5a100c5cf1')
+      .then(response => response.json())
+      .then(json => {
+        const locations = json;
+        console.log('Locations: ', locations);
+        // return the lat and lon of the first location in locations array
+        const latLon = [locations[0].lat, locations[0].lon];
+        return latLon;
+      })
+      .then(latLon => {
+        const [lat, lon] = latLon;
+        return getForecast(lat, lon);
+      })
+      .catch((error) => console.error(error))
+      );
+}
 
-function getForecast() {
-  fetch('https://api.openweathermap.org/data/2.5/weather?q=London,uk&units=metric&APPID=886b4d9fa52f373586e1ac5a100c5cf1')
+function getForecast(lat, lon) {
+  return fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&APPID=886b4d9fa52f373586e1ac5a100c5cf1`)
     .then(response => response.json())
     .then(json => {
+      return json;
+    })
+    .catch((error) => console.error(error))
+}
 
-      // import part
-      const forecast = json;
+function main() {
+  getLocation()
+  .then(response => {
+      const forecast = response;
 
       console.log("forecast object: ", forecast)
-      console.log("Short forecast: ", forecast.weather[0].description)
-      console.log("Current temperature: ", forecast.main.temp,"°c")
-      console.log("Feels like: ", forecast.main.feels_like,"°c")
-      console.log("Current wind speed: ", forecast.wind.speed,"km/h")
 
       const shortForecast = forecast.weather[0].description
       const currentTemp = Math.round(forecast.main.temp)
@@ -49,11 +71,8 @@ function getForecast() {
       myDiv.appendChild(newTemp)
       myDiv.appendChild(newFeelsLike)
       myDiv.appendChild(newWindSpeed)
-
-    })
-    .catch((error) => console.error(error))
+  })
+  .catch(error => console.error(error));
 }
 
-getForecast();
-
-
+main();
