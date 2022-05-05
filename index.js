@@ -4,11 +4,11 @@
 // Add basic forecast to index.html - DONE
 // Figure out how to select a forecast by location (read https://openweathermap.org/api/geocoding-api) - DONE
 // Create a form for user to select their chosen location's forecast - DONE
+// Clear both input value and previous forecast, after forecast displays - DONE
 // Figure out how to let user see and choose options for their city (e.g. which 'London' do they mean)?
 // Display error if user doesn't enter a valid location
 // Allow user to press "enter" to submit city as well as clicking submit button
 // Allow user to choose between imperial and metric temp/wind speed
-// Clear both input value and previous forecast, after forecast displays
 // Use flexbox and CSS to improve page layout
 // Add dynamic page background, selected by keywords in shortForecast
 // (is there a way to get a list of all possible responses to forecast.weather[0].description?)
@@ -47,9 +47,18 @@ function getForecast(lat, lon) {
     .catch((error) => console.error(error))
 }
 
+function empty(element) {
+  element.replaceChildren(); 
+}
+
 function main() {
   const userSubmission = document.getElementById("user-submission");
-  userSubmission.addEventListener("click", function() {  
+  userSubmission.addEventListener("click", function() {
+
+    // Remove previous results from display
+    let parent = document.getElementById("api-spot");
+    empty(parent);
+
     getUserCity()
     .then(response => {
         const forecast = response;
@@ -84,10 +93,12 @@ function main() {
         myDiv.appendChild(newTemp)
         myDiv.appendChild(newFeelsLike)
         myDiv.appendChild(newWindSpeed)
+
+        // Clear search form
+        document.getElementById("forecast-search").reset();
     })
     .catch(error => console.error(error));
   })
 }
 
 main();
-
